@@ -1,0 +1,72 @@
+# Python specific
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+venv/
+env/
+ENV/
+.env
+.env.production
+.env.development
+.venv
+env.bak/
+venv.bak/
+
+# Log files
+*.log
+logs/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# VS Code
+.vscode/
+
+# PyCharm
+.idea/
+
+# Azure related
+azure_settings.json
+.azure/
+
+# Local data files
+*.db
+*.sqlite3
+data/
+
+# Temp files
+tmp/
+temp/
+
+# Document storage (local test uploads)
+uploads/
+documents/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover 

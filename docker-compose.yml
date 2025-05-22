@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14
+    container_name: postgres-server
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=docprocessor
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Backend Python service (FastAPI + Worker)
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8000"
+    volumes:
+      - ./backend/.env:/app/.env
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres-server:5432/docprocessor
+    restart: unless-stopped
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+    networks:
+      - app-network
+
+  # Frontend Next.js service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3010:3000"
+    volumes:
+      - ./frontend/.env:/app/.env
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8080
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+# Volumes
+volumes:
+  postgres_data:
+
+# Networks
+networks:
+  app-network:
+    driver: bridge
+
+# Define top-level environment variables to read from frontend/.env
+x-environment:
+  &frontend-environment
+  FRONTEND_AZURE_STORAGE_ACCOUNT_NAME: ${AZURE_STORAGE_ACCOUNT_NAME}
+  FRONTEND_AZURE_STORAGE_ACCOUNT_KEY: ${AZURE_STORAGE_ACCOUNT_KEY}
+  FRONTEND_AZURE_STORAGE_CONTAINER_NAME: ${AZURE_STORAGE_CONTAINER_NAME}
